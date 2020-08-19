@@ -11,60 +11,52 @@ import static ru.geekbrains.client.MessagePatterns.*;
 
 public class Network implements Closeable {
 
+  private final String hostName;
+  private final int port;
+  private final Thread receiverThread;
   public Socket socket;
   public DataInputStream in;
   public DataOutputStream out;
-
-  private String hostName;
-  private int port;
-  private MessageReciever messageReciever;
-
   private String login;
-
-  private Thread receiverThread;
 
   public Network(String hostName, int port, MessageReciever messageReciever) {
     this.hostName = hostName;
     this.port = port;
-    this.messageReciever = messageReciever;
 
     this.receiverThread =
         new Thread(
-            new Runnable() {
-              @Override
-              public void run() {
-                while (!Thread.currentThread().isInterrupted()) {
-                  try {
-                    String text = in.readUTF();
+            () -> {
+              while (!Thread.currentThread().isInterrupted()) {
+                try {
+                  String text = in.readUTF();
 
-                    System.out.println("New message " + text);
-                    TextMessage msg = parseTextMessageRegx(text, login);
-                    if (msg != null) {
-                      messageReciever.submitMessage(msg);
-                      continue;
-                    }
+                  System.out.println("New message " + text);
+                  TextMessage msg = parseTextMessageRegx(text, login);
+                  if (msg != null) {
+                    messageReciever.submitMessage(msg);
+                    continue;
+                  }
 
-                    String login = parseConnectedMessage(text);
-                    if (login != null) {
-                      messageReciever.userConnected(login);
-                      continue;
-                    }
+                  String login = parseConnectedMessage(text);
+                  if (login != null) {
+                    messageReciever.userConnected(login);
+                    continue;
+                  }
 
-                    login = parseDisconnectedMessage(text);
-                    if (login != null) {
-                      messageReciever.userDisconnected(login);
-                      continue;
-                    }
+                  login = parseDisconnectedMessage(text);
+                  if (login != null) {
+                    messageReciever.userDisconnected(login);
+                    continue;
+                  }
 
-                    Set<String> users = parseUserList(text);
-                    if (users != null) {
-                      messageReciever.updateUserList(users);
-                    }
-                  } catch (IOException e) {
-                    e.printStackTrace();
-                    if (socket.isClosed()) {
-                      break;
-                    }
+                  Set<String> users = parseUserList(text);
+                  if (users != null) {
+                    messageReciever.updateUserList(users);
+                  }
+                } catch (IOException e) {
+                  e.printStackTrace();
+                  if (socket.isClosed()) {
+                    break;
                   }
                 }
               }

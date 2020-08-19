@@ -1,5 +1,6 @@
 package ru.geekbrains.client;
 
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -70,14 +71,10 @@ public final class MessagePatterns {
   public static Set<String> parseUserList(String text) {
     String[] parts = text.split(" ");
     if (parts.length >= 1 && parts[0].equals(USER_LIST_TAG)) {
-      Set<String> users = new HashSet<>();
-      for (int i = 1; i < parts.length; i++) {
-        users.add(parts[i]);
-      }
-      return users;
+      return new HashSet<>(Arrays.asList(parts).subList(1, parts.length));
     } else {
       System.out.println("Not a user list pattern: " + text);
-      return null;
+      return new HashSet<>();
     }
   }
 }

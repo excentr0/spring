@@ -10,26 +10,20 @@ import java.io.IOException;
 
 public class LoginDialog extends JDialog {
 
-  private Network network;
-  private JTextField tfUsername;
-  private JPasswordField pfPassword;
-  private JLabel lbUsername;
-  private JLabel lbPassword;
-  private JButton btnLogin;
-  private JButton btnCancel;
+  private final JTextField tfUsername;
+  private final JPasswordField pfPassword;
 
   private boolean connected;
 
   public LoginDialog(Frame parent, final Network network) {
     super(parent, "Логин", true);
-    this.network = network;
 
     JPanel panel = new JPanel(new GridBagLayout());
     GridBagConstraints cs = new GridBagConstraints();
 
     cs.fill = GridBagConstraints.HORIZONTAL;
 
-    lbUsername = new JLabel("Имя пользователя: ");
+    JLabel lbUsername = new JLabel("Имя пользователя: ");
     cs.gridx = 0;
     cs.gridy = 0;
     cs.gridwidth = 1;
@@ -41,7 +35,7 @@ public class LoginDialog extends JDialog {
     cs.gridwidth = 2;
     panel.add(tfUsername, cs);
 
-    lbPassword = new JLabel("Пароль: ");
+    JLabel lbPassword = new JLabel("Пароль: ");
     cs.gridx = 0;
     cs.gridy = 1;
     cs.gridwidth = 1;
@@ -54,8 +48,8 @@ public class LoginDialog extends JDialog {
     panel.add(pfPassword, cs);
     panel.setBorder(new LineBorder(Color.GRAY));
 
-    btnLogin = new JButton("Войти");
-    btnCancel = new JButton("Отмена");
+    JButton btnLogin = new JButton("Войти");
+    JButton btnCancel = new JButton("Отмена");
 
     JPanel bp = new JPanel();
     bp.add(btnLogin);

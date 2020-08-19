@@ -19,25 +19,11 @@ import java.util.Set;
 public class ChatMainWindow extends JFrame implements MessageReciever {
 
   private final JList<TextMessage> messageList;
-
   private final DefaultListModel<TextMessage> messageListModel;
-
-  private final TextMessageCellRenderer messageCellRenderer;
-
-  private final JScrollPane scroll;
-
-  private final JPanel sendMessagePanel;
-
-  private final JButton sendButton;
-
   private final JTextField messageField;
-
   private final JList<String> userList;
-
   private final DefaultListModel<String> userListModel;
-
   private final Network network;
-
   private ChatHistory chatHistory;
 
   public ChatMainWindow() {
@@ -49,21 +35,21 @@ public class ChatMainWindow extends JFrame implements MessageReciever {
 
     messageList = new JList<>();
     messageListModel = new DefaultListModel<>();
-    messageCellRenderer = new TextMessageCellRenderer();
+    TextMessageCellRenderer messageCellRenderer = new TextMessageCellRenderer();
     messageList.setModel(messageListModel);
     messageList.setCellRenderer(messageCellRenderer);
 
-    scroll =
+    JScrollPane scroll =
         new JScrollPane(
             messageList,
             JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
             JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
     add(scroll, BorderLayout.CENTER);
 
-    sendMessagePanel = new JPanel();
+    JPanel sendMessagePanel = new JPanel();
     sendMessagePanel.setLayout(new BorderLayout());
 
-    sendButton = new JButton("Отправить");
+    JButton sendButton = new JButton("Отправить");
     sendButton.addActionListener(
         new ActionListener() {
           @Override
@@ -147,26 +133,20 @@ public class ChatMainWindow extends JFrame implements MessageReciever {
   @Override
   public void submitMessage(TextMessage message) {
     SwingUtilities.invokeLater(
-        new Runnable() {
-          @Override
-          public void run() {
-            messageListModel.add(messageListModel.size(), message);
-            messageList.ensureIndexIsVisible(messageListModel.size() - 1);
-            chatHistory.addMessage(message);
-          }
+        () -> {
+          messageListModel.add(messageListModel.size(), message);
+          messageList.ensureIndexIsVisible(messageListModel.size() - 1);
+          chatHistory.addMessage(message);
         });
   }
 
   @Override
   public void userConnected(String login) {
     SwingUtilities.invokeLater(
-        new Runnable() {
-          @Override
-          public void run() {
-            int ix = userListModel.indexOf(login);
-            if (ix == -1) {
-              userListModel.add(userListModel.size(), login);
-            }
+        () -> {
+          int ix = userListModel.indexOf(login);
+          if (ix == -1) {
+            userListModel.add(userListModel.size(), login);
           }
         });
   }
@@ -174,13 +154,10 @@ public class ChatMainWindow extends JFrame implements MessageReciever {
   @Override
   public void userDisconnected(String login) {
     SwingUtilities.invokeLater(
-        new Runnable() {
-          @Override
-          public void run() {
-            int ix = userListModel.indexOf(login);
-            if (ix >= 0) {
-              userListModel.remove(ix);
-            }
+        () -> {
+          int ix = userListModel.indexOf(login);
+          if (ix >= 0) {
+            userListModel.remove(ix);
           }
         });
   }
@@ -188,13 +165,10 @@ public class ChatMainWindow extends JFrame implements MessageReciever {
   @Override
   public void updateUserList(Set<String> users) {
     SwingUtilities.invokeLater(
-        new Runnable() {
-          @Override
-          public void run() {
-            userListModel.clear();
-            for (String usr : users) {
-              userListModel.addElement(usr);
-            }
+        () -> {
+          userListModel.clear();
+          for (String usr : users) {
+            userListModel.addElement(usr);
           }
         });
   }

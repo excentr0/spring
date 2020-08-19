@@ -9,14 +9,9 @@ import java.time.format.DateTimeFormatter;
 public class TextMessageCellRenderer extends JPanel implements ListCellRenderer<TextMessage> {
 
   private static final DateTimeFormatter timeFormatter = DateTimeFormatter.ofPattern("HH:mm:ss");
-
   private final JLabel created;
-
   private final JLabel userName;
-
   private final JTextArea messageText;
-
-  private final JPanel panel;
 
   public TextMessageCellRenderer() {
     super();
@@ -25,7 +20,7 @@ public class TextMessageCellRenderer extends JPanel implements ListCellRenderer<
     created = new JLabel();
     userName = new JLabel();
     messageText = new JTextArea();
-    panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+    JPanel panel = new JPanel(new FlowLayout(FlowLayout.LEFT));
 
     panel.add(created);
     panel.add(userName);

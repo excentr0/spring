@@ -1,12 +1,10 @@
 package ru.geekbrains.client.javafx;
 
 import javafx.application.Application;
-import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import javafx.stage.WindowEvent;
 import ru.geekbrains.client.javafx.controller.Controller;
 
 import java.io.IOException;
@@ -26,13 +24,7 @@ public class ChatJavaFxApp extends Application {
 
     primaryStage.setTitle("Network Chat");
     primaryStage.setScene(new Scene(root));
-    primaryStage.setOnHidden(
-        new EventHandler<WindowEvent>() {
-          @Override
-          public void handle(WindowEvent event) {
-            ctrl.closeNetworkConnection();
-          }
-        });
+    primaryStage.setOnHidden(event -> ctrl.closeNetworkConnection());
     primaryStage.show();
   }
 }

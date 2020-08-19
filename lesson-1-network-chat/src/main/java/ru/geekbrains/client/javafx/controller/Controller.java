@@ -8,7 +8,6 @@ import javafx.fxml.Initializable;
 import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import javafx.stage.Stage;
-import javafx.util.Callback;
 import ru.geekbrains.client.AuthException;
 import ru.geekbrains.client.MessageReciever;
 import ru.geekbrains.client.Network;
@@ -42,8 +41,6 @@ public class Controller implements Initializable, MessageReciever {
 
   private ObservableList<TextMessage> messageList;
 
-  private ObservableList<String> userList;
-
   private Network network;
   private ChatHistory chatHistory;
 
@@ -52,15 +49,9 @@ public class Controller implements Initializable, MessageReciever {
     messageList = FXCollections.observableArrayList();
 
     lvMessages.setItems(messageList);
-    lvMessages.setCellFactory(
-        new Callback<ListView<TextMessage>, ListCell<TextMessage>>() {
-          @Override
-          public ListCell<TextMessage> call(ListView<TextMessage> param) {
-            return new MessageCellController();
-          }
-        });
+    lvMessages.setCellFactory(param -> new MessageCellController());
 
-    userList = FXCollections.observableArrayList();
+    ObservableList<String> userList = FXCollections.observableArrayList();
     userList.addAll("ivan", "petr", "julia"); // пока фмксированный список
     lvUserList.setItems(userList);
 
@@ -114,13 +105,7 @@ public class Controller implements Initializable, MessageReciever {
 
   @Override
   public void submitMessage(TextMessage msg) {
-    Platform.runLater(
-        new Runnable() {
-          @Override
-          public void run() {
-            messageList.add(msg);
-          }
-        });
+    Platform.runLater(() -> messageList.add(msg));
   }
 
   @Override

@@ -24,8 +24,8 @@ import static ru.geekbrains.client.MessagePatterns.AUTH_SUCCESS_RESPONSE;
 
 public class ChatServer {
 
-  private AuthService authService;
-  private Map<String, ClientHandler> clientHandlerMap =
+  private final AuthService authService;
+  private final Map<String, ClientHandler> clientHandlerMap =
       Collections.synchronizedMap(new HashMap<>());
 
   public ChatServer(AuthService authService) {
@@ -38,7 +38,7 @@ public class ChatServer {
       Connection conn =
           DriverManager.getConnection("jdbc:mysql://localhost:3306/network_chat", "root", "root");
       UserRepository userRepository = new UserRepository(conn);
-      if (userRepository.getAllUsers().size() == 0) {
+      if (userRepository.getAllUsers().isEmpty()) {
         userRepository.insert(new User(-1, "ivan", "123"));
         userRepository.insert(new User(-1, "petr", "345"));
         userRepository.insert(new User(-1, "julia", "789"));
@@ -57,39 +57,54 @@ public class ChatServer {
     try (ServerSocket serverSocket = new ServerSocket(port)) {
       System.out.println("Server started!");
       while (true) {
-        Socket socket = serverSocket.accept();
-        DataInputStream inp = new DataInputStream(socket.getInputStream());
-        DataOutputStream out = new DataOutputStream(socket.getOutputStream());
-        System.out.println("New client connected!");
+        try (Socket socket = serverSocket.accept()) {
+          DataOutputStream out;
+          User user;
+          try (DataInputStream inp = new DataInputStream(socket.getInputStream())) {
+            out = new DataOutputStream(socket.getOutputStream());
+            System.out.println("New client connected!");
 
-        User user = null;
-        try {
-          String authMessage = inp.readUTF();
-          user = checkAuthentication(authMessage);
-        } catch (IOException ex) {
-          ex.printStackTrace();
-        } catch (AuthException ex) {
-          out.writeUTF(AUTH_FAIL_RESPONSE);
-          out.flush();
-          socket.close();
-        }
-        if (user != null && authService.authUser(user)) {
-          System.out.printf("User %s authorized successful!%n", user.getLogin());
-          subscribe(user.getLogin(), socket);
-          out.writeUTF(AUTH_SUCCESS_RESPONSE);
-          out.flush();
-        } else {
-          if (user != null) {
-            System.out.printf("Wrong authorization for user %s%n", user.getLogin());
+            user = null;
+            user = getUser(socket, inp, out, user);
           }
-          out.writeUTF(AUTH_FAIL_RESPONSE);
+
+          if (user != null && authService.authUser(user)) {
+            System.out.printf("User %s authorized successful!%n", user.getLogin());
+            subscribe(user.getLogin(), socket);
+            out.writeUTF(AUTH_SUCCESS_RESPONSE);
+          } else {
+            if (user != null) {
+              System.out.printf("Wrong authorization for user %s%n", user.getLogin());
+            }
+            out.writeUTF(AUTH_FAIL_RESPONSE);
+          }
           out.flush();
-          socket.close();
         }
       }
     } catch (IOException ex) {
       ex.printStackTrace();
     }
+  }
+
+  private User getUser(Socket socket, DataInputStream inp, DataOutputStream out, User user)
+      throws IOException {
+    try {
+      String authMessage = inp.readUTF();
+      user = checkAuthentication(authMessage);
+    } catch (IOException ex) {
+      ex.printStackTrace();
+    } catch (AuthException ex) {
+      out.writeUTF(AUTH_FAIL_RESPONSE);
+      out.flush();
+      socket.close();
+    }
+    return user;
+  }
+
+  public void subscribe(String login, Socket socket) throws IOException {
+    // TODO Проверить, подключен ли уже пользователь. Если да, то отправить клиенту ошибку
+    clientHandlerMap.put(login, new ClientHandler(login, socket, this));
+    sendUserConnectedMessage(login);
   }
 
   private User checkAuthentication(String authMessage) throws AuthException {
@@ -99,12 +114,6 @@ public class ChatServer {
       throw new AuthException();
     }
     return new User(-1, authParts[1], authParts[2]);
-  }
-
-  public void subscribe(String login, Socket socket) throws IOException {
-    // TODO Проверить, подключен ли уже пользователь. Если да, то отправить клиенту ошибку
-    clientHandlerMap.put(login, new ClientHandler(login, socket, this));
-    sendUserConnectedMessage(login);
   }
 
   private void sendUserConnectedMessage(String login) throws IOException {

@@ -2,8 +2,6 @@ package ru.geekbrains.client.swing;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 public class LayoutDemoWindow extends JFrame {
 
@@ -21,13 +19,9 @@ public class LayoutDemoWindow extends JFrame {
 
     JButton button1 = new JButton("Center");
     button1.addActionListener(
-        new ActionListener() {
-          @Override
-          public void actionPerformed(ActionEvent e) {
+        e ->
             JOptionPane.showMessageDialog(
-                LayoutDemoWindow.this, "Message", "Title", JOptionPane.INFORMATION_MESSAGE);
-          }
-        });
+                LayoutDemoWindow.this, "Message", "Title", JOptionPane.INFORMATION_MESSAGE));
     JButton button2 = new JButton("East");
     JButton button3 = new JButton("West");
     JButton button4 = new JButton("North");

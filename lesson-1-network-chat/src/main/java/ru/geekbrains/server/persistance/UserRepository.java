@@ -40,10 +40,10 @@ public class UserRepository {
     try (PreparedStatement stmt =
         conn.prepareStatement("select id, login, password from users where login = ?")) {
       stmt.setString(1, login);
-      ResultSet rs = stmt.executeQuery();
-
-      if (rs.next()) {
-        return new User(rs.getInt(1), rs.getString(2), rs.getString(3));
+      try (ResultSet rs = stmt.executeQuery()) {
+        if (rs.next()) {
+          return new User(rs.getInt(1), rs.getString(2), rs.getString(3));
+        }
       }
     }
     return new User(-1, "", "");
@@ -52,10 +52,10 @@ public class UserRepository {
   public List<User> getAllUsers() throws SQLException {
     List<User> res = new ArrayList<>();
     try (Statement stmt = conn.createStatement()) {
-      ResultSet rs = stmt.executeQuery("select id, login, password from users");
-
-      while (rs.next()) {
-        res.add(new User(rs.getInt(1), rs.getString(2), rs.getString(3)));
+      try (ResultSet rs = stmt.executeQuery("select id, login, password from users")) {
+        while (rs.next()) {
+          res.add(new User(rs.getInt(1), rs.getString(2), rs.getString(3)));
+        }
       }
     }
     return res;
