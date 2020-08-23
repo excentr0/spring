@@ -36,7 +36,8 @@ public class ChatServer {
     AuthService authService;
     try {
       Connection conn =
-          DriverManager.getConnection("jdbc:mysql://localhost:3306/network_chat", "root", "root");
+          DriverManager.getConnection(
+              "jdbc:mysql://localhost:3306/network_chat?serverTimezone=UTC", "root", "root");
       UserRepository userRepository = new UserRepository(conn);
       if (userRepository.getAllUsers().isEmpty()) {
         userRepository.insert(new User(-1, "ivan", "123"));
@@ -53,6 +54,7 @@ public class ChatServer {
     chatServer.start(7777);
   }
 
+  @SuppressWarnings("InfiniteLoopStatement")
   private void start(int port) {
     try (ServerSocket serverSocket = new ServerSocket(port)) {
       System.out.println("Server started!");
