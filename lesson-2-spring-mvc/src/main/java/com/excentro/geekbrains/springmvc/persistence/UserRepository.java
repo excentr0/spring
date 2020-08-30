@@ -1,4 +1,4 @@
-package ru.geekbrains.server.persistence;
+package com.excentro.geekbrains.springmvc.persistence;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -10,7 +10,6 @@ import java.util.List;
 import javax.sql.DataSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
-import ru.geekbrains.server.User;
 
 @Repository
 public class UserRepository {
