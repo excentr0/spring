@@ -1,18 +1,18 @@
 package com.excentro.geekbrains.springmvc;
 
-import java.sql.SQLException;
-import javax.sql.DataSource;
-import com.excentro.geekbrains.springmvc.persistence.UserRepository;
+import com.excentro.geekbrains.springmvc.persistence.ProductRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 
+import javax.sql.DataSource;
+import java.sql.SQLException;
+
 @Configuration
 @PropertySource("classpath:application.properties")
 public class PersistConfig {
-
   @Value("${database.driver.class}")
   private String driverClassName;
 
@@ -26,8 +26,8 @@ public class PersistConfig {
   private String password;
 
   @Bean
-  public UserRepository userRepository(DataSource dataSource) throws SQLException {
-    return new UserRepository(dataSource);
+  public ProductRepository productRepository(DataSource dataSource) throws SQLException {
+    return new ProductRepository(dataSource);
   }
 
   @Bean

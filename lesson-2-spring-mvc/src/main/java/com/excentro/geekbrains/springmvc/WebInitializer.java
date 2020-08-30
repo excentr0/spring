@@ -1,9 +1,10 @@
 package com.excentro.geekbrains.springmvc;
 
-import javax.servlet.Filter;
 import org.springframework.web.filter.CharacterEncodingFilter;
 import org.springframework.web.filter.HiddenHttpMethodFilter;
 import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatcherServletInitializer;
+
+import javax.servlet.Filter;
 
 public class WebInitializer extends AbstractAnnotationConfigDispatcherServletInitializer {
 
@@ -33,5 +34,4 @@ public class WebInitializer extends AbstractAnnotationConfigDispatcherServletIni
     HiddenHttpMethodFilter httpMethodFilter = new HiddenHttpMethodFilter();
     return new Filter[] {characterEncodingFilter, httpMethodFilter};
   }
-
 }

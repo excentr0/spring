@@ -20,7 +20,7 @@ import org.thymeleaf.templateresolver.ITemplateResolver;
 @EnableWebMvc
 @Configuration
 @Import(PersistConfig.class)
-@ComponentScan("com.excentro.geekbrains")
+@ComponentScan("com.excentro.geekbrains.springmvc")
 public class AppConfig implements WebMvcConfigurer {
 
   private ApplicationContext applicationContext;
@@ -32,8 +32,9 @@ public class AppConfig implements WebMvcConfigurer {
 
   @Override
   public void addResourceHandlers(ResourceHandlerRegistry registry) {
-    registry.addResourceHandler("/resources/**").addResourceLocations("/resources/",
-        "classpath:/css/");
+    registry
+        .addResourceHandler("/resources/**")
+        .addResourceLocations("/resources/", "classpath:/css/");
   }
 
   @Bean
@@ -46,6 +47,12 @@ public class AppConfig implements WebMvcConfigurer {
     return resolver;
   }
 
+  private ISpringTemplateEngine templateEngine(ITemplateResolver templateResolver) {
+    SpringTemplateEngine engine = new SpringTemplateEngine();
+    engine.setTemplateResolver(templateResolver);
+    return engine;
+  }
+
   private ITemplateResolver htmlTemplateResolver() {
     SpringResourceTemplateResolver resolver = new SpringResourceTemplateResolver();
     resolver.setApplicationContext(applicationContext);
@@ -54,11 +61,5 @@ public class AppConfig implements WebMvcConfigurer {
     resolver.setCacheable(false);
     resolver.setTemplateMode(TemplateMode.HTML);
     return resolver;
-  }
-
-  private ISpringTemplateEngine templateEngine(ITemplateResolver templateResolver) {
-    SpringTemplateEngine engine = new SpringTemplateEngine();
-    engine.setTemplateResolver(templateResolver);
-    return engine;
   }
 }
