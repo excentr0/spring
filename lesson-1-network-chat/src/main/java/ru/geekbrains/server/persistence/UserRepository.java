@@ -1,13 +1,16 @@
 package ru.geekbrains.server.persistence;
 
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.ArrayList;
+import java.util.List;
+import javax.sql.DataSource;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 import ru.geekbrains.server.User;
-
-import javax.sql.DataSource;
-import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
 
 @Repository
 public class UserRepository {
@@ -26,13 +29,9 @@ public class UserRepository {
 
   private void createTableIfNotExists(Connection conn) throws SQLException {
     try (Statement stmt = conn.createStatement()) {
-      stmt.execute(
-          "create table if not exists users (\n"
-              + "\tid int auto_increment primary key,\n"
-              + "    login varchar(25),\n"
-              + "    password varchar(25),\n"
-              + "    unique index uq_login(login)\n"
-              + ");");
+      stmt.execute("create table if not exists users (\n" + "\tid int auto_increment primary key,\n"
+          + "    login varchar(25),\n" + "    password varchar(25),\n"
+          + "    unique index uq_login(login)\n" + ");");
     }
   }
 
