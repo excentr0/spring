@@ -4,53 +4,105 @@ import org.hibernate.cfg.Configuration;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
+import java.math.BigDecimal;
+import java.util.List;
 
 public class Main {
   public static void main(String[] args) {
     EntityManagerFactory emFactory =
         new Configuration().configure("hibernate.cfg.xml").buildSessionFactory();
 
-    // Insert into database
-    /*EntityManager entityManager = emFactory.createEntityManager();
-    User user1 = new User(null, "Alex", "alex");
-    User user2 = new User(null, "Mike", "mike");
+    if (args.length == 0) {
+      listAndHelp(emFactory);
+    } else if (args[0].equals("add")) {
+      if (args[1].equals("product")) {
+        addProduct(args, emFactory);
+      } else if (args[1].equals("buyer")) {
+        addBuyer(args[2], emFactory);
+      }
+    } else if (args[0].equals("list")) {
+      listBuyersProducts(args[1], emFactory);
+    } else if (args[0].equals("del")) {
+      deleteProductOrBuyer(args, emFactory);
+    } else if (args[0].equals("search")) {
+      searchProduct(args[1], emFactory);
+    }
+  }
 
-    entityManager.getTransaction().begin();
-    entityManager.persist(user1);
-    entityManager.persist(user2);
-    entityManager.getTransaction().commit();
-    entityManager.close();*/
-
-    // select from database
-    //    EntityManager entityManager = emFactory.createEntityManager();
-    //
-    //    User user = entityManager.find(User.class, 1);
-    //    System.out.println(user);
-    //
-    //    List<User> users = entityManager.createQuery("from User", User.class).getResultList();
-    //    System.out.println(users);
-    //
-    //    User singleResult =
-    //        entityManager
-    //            .createQuery("from User where login=:login", User.class)
-    //            .setParameter("login", "mike")
-    //            .getSingleResult();
-    //    System.out.println(singleResult);
-
-    // update entity
-    /*EntityManager entityManager = emFactory.createEntityManager();
-    User user = entityManager.find(User.class, 1);
-
-    entityManager.getTransaction().begin();
-    user.setPassword("pass");
-    entityManager.getTransaction().commit();*/
-
-    // add Contact to User
+  private static void listAndHelp(EntityManagerFactory emFactory) {
     EntityManager entityManager = emFactory.createEntityManager();
-    User user = entityManager.find(User.class, 1);
-    Contact contact = new Contact(null, "mobile phone", "123232323", user);
     entityManager.getTransaction().begin();
-    entityManager.persist(contact);
+    List<Buyer> buyers = entityManager.createQuery("from Buyer ", Buyer.class).getResultList();
+    System.out.println("Example: add product title price buyer_id");
+    System.out.println("Example: add buyer name");
+    System.out.println("Example: list buyer_id");
+    System.out.println("Example: search product_name");
+    System.out.println("Example: del product/buyer id");
+    System.out.println(buyers);
     entityManager.getTransaction().commit();
+    entityManager.close();
+  }
+
+  private static void addProduct(String[] args, EntityManagerFactory emFactory) {
+    EntityManager entityManager = emFactory.createEntityManager();
+    entityManager.getTransaction().begin();
+    Buyer buyer = entityManager.find(Buyer.class, Integer.valueOf(args[4]));
+    if (buyer == null) {
+      System.out.println("Where is now buyers yet. Add some");
+      return;
+    }
+    Product product = new Product(args[2], new BigDecimal(args[3]), buyer);
+    entityManager.persist(product);
+    entityManager.getTransaction().commit();
+    entityManager.close();
+  }
+
+  private static void addBuyer(String arg, EntityManagerFactory emFactory) {
+    EntityManager entityManager = emFactory.createEntityManager();
+    entityManager.getTransaction().begin();
+    Buyer buyer = new Buyer(arg);
+    entityManager.persist(buyer);
+    entityManager.getTransaction().commit();
+    entityManager.close();
+  }
+
+  private static void listBuyersProducts(String arg, EntityManagerFactory emFactory) {
+    EntityManager entityManager = emFactory.createEntityManager();
+    entityManager.getTransaction().begin();
+    List<Product> products =
+        entityManager
+            .createQuery("from Product where buyer.id=:id", Product.class)
+            .setParameter("id", Integer.valueOf(arg))
+            .getResultList();
+    entityManager.getTransaction().commit();
+    entityManager.close();
+    System.out.println(products);
+  }
+
+  private static void deleteProductOrBuyer(String[] args, EntityManagerFactory emFactory) {
+    EntityManager entityManager = emFactory.createEntityManager();
+    entityManager.getTransaction().begin();
+    if (args[1].equals("product")) {
+      Product product = entityManager.find(Product.class, Integer.valueOf(args[2]));
+      entityManager.remove(product);
+    } else if (args[1].equals("buyer")) {
+      Buyer buyer = entityManager.find(Buyer.class, Integer.valueOf(args[2]));
+      entityManager.remove(buyer);
+    }
+    entityManager.getTransaction().commit();
+    entityManager.close();
+  }
+
+  private static void searchProduct(String arg, EntityManagerFactory emFactory) {
+    EntityManager entityManager = emFactory.createEntityManager();
+    entityManager.getTransaction().begin();
+    List<Product> products =
+        entityManager
+            .createQuery("from Product where title like :ss", Product.class)
+            .setParameter("ss", "%" + arg + "%")
+            .getResultList();
+    System.out.println(products);
+    entityManager.getTransaction().commit();
+    entityManager.close();
   }
 }
