@@ -21,7 +21,6 @@ public class Product {
   public Product() {}
 
   public Product(Long id, String title, BigDecimal cost) {
-
     this.id = id;
     this.title = title;
     this.cost = cost;

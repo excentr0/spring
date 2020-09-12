@@ -1,10 +1,10 @@
 package com.excentro.geekbrains.springmvc;
 
-import com.excentro.geekbrains.springmvc.persistence.ProductRepository;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
@@ -16,6 +16,7 @@ import java.util.Properties;
 
 @Configuration
 @PropertySource("classpath:application.properties")
+@EnableJpaRepositories("com.excentro.geekbrains.springmvc.persistence.repo")
 public class PersistConfig {
   @Value("${database.driver.class}")
   private String driverClassName;
@@ -28,11 +29,6 @@ public class PersistConfig {
 
   @Value("${database.password}")
   private String password;
-
-  @Bean
-  public ProductRepository productRepository() {
-    return new ProductRepository();
-  }
 
   @Bean(name = "entityManagerFactory")
   public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
@@ -64,6 +60,7 @@ public class PersistConfig {
     jpaProperties.put("hibernate.show_sql", true);
     jpaProperties.put("hibernate.format_sql", true);
     jpaProperties.put("connection.pool_size", 2);
+    jpaProperties.put("hibernate.generate_statistics", true);
     return jpaProperties;
   }
 
