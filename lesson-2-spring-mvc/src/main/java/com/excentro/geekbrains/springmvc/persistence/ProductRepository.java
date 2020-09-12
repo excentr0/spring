@@ -5,7 +5,11 @@ import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
 import java.math.BigDecimal;
-import java.sql.*;
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -35,8 +39,6 @@ public class ProductRepository {
               + "constraint products_pk "
               + "primary key (id)"
               + ");");
-    } catch (SQLException e) {
-
     }
   }
 
@@ -70,8 +72,8 @@ public class ProductRepository {
           return new Product(rs.getInt(1), rs.getString(2), rs.getBigDecimal(3));
         }
       }
-    } catch (SQLException throwables) {
-      throwables.printStackTrace();
+    } catch (SQLException throwable) {
+      throwable.printStackTrace();
     }
     return new Product(-1, "", new BigDecimal(0));
   }
