@@ -6,9 +6,13 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
+import org.springframework.orm.jpa.JpaTransactionManager;
+import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
+import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 
+import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
-import java.sql.SQLException;
+import java.util.Properties;
 
 @Configuration
 @PropertySource("classpath:application.properties")
@@ -26,8 +30,18 @@ public class PersistConfig {
   private String password;
 
   @Bean
-  public ProductRepository productRepository(DataSource dataSource) throws SQLException {
-    return new ProductRepository(dataSource);
+  public ProductRepository productRepository() {
+    return new ProductRepository();
+  }
+
+  @Bean(name = "entityManagerFactory")
+  public LocalContainerEntityManagerFactoryBean entityManagerFactory() {
+    LocalContainerEntityManagerFactoryBean factory = new LocalContainerEntityManagerFactoryBean();
+    factory.setDataSource(dataSource());
+    factory.setJpaVendorAdapter(new HibernateJpaVendorAdapter());
+    factory.setPackagesToScan("com.excentro.geekbrains.springmvc.persistence.entity");
+    factory.setJpaProperties(jpaProperties());
+    return factory;
   }
 
   @Bean
@@ -38,5 +52,25 @@ public class PersistConfig {
     ds.setPassword(password);
     ds.setUrl(databaseUrl);
     return ds;
+  }
+
+  private Properties jpaProperties() {
+    Properties jpaProperties = new Properties();
+    jpaProperties.put("hibernate.hbm2ddl.auto", "update");
+    jpaProperties.put("hibernate.dialect", "org.hibernate.dialect.MySQL8Dialect");
+    jpaProperties.put("hibernate.max_fetch.depth", 3);
+    jpaProperties.put("hibernate.jdbc.fetch_size", 50);
+    jpaProperties.put("hibernate.jdbc.batch_size", 10);
+    jpaProperties.put("hibernate.show_sql", true);
+    jpaProperties.put("hibernate.format_sql", true);
+    jpaProperties.put("connection.pool_size", 2);
+    return jpaProperties;
+  }
+
+  @Bean
+  public JpaTransactionManager transactionManager(EntityManagerFactory entityManagerFactory) {
+    JpaTransactionManager tm = new JpaTransactionManager();
+    tm.setEntityManagerFactory(entityManagerFactory);
+    return tm;
   }
 }
