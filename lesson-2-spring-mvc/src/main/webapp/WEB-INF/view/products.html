@@ -39,7 +39,12 @@
 
         <div class="col-12 mt-3">
             <form>
-                <label for="title">Title</label><input id="title" name="title" th:value="${param.title}" type="text">
+                <label for="title">Title</label>
+                <input id="title" name="title" th:value="${param.title}" type="text">
+                <label for="priceLess">Price Less</label>
+                <input id="priceLess" name="priceLess" th:value="${param.priceLess}" type="text">
+                <label for="priceGreater">Price Greater</label>
+                <input id="priceGreater" name="priceGreater" th:value="${param.priceGreater}" type="text">
                 <button class="btn btn-primary" type="submit">Filter</button>
             </form>
         </div>

@@ -52,14 +52,17 @@ public class PersistConfig {
 
   private Properties jpaProperties() {
     Properties jpaProperties = new Properties();
-    jpaProperties.put("hibernate.hbm2ddl.auto", "update");
+    jpaProperties.put("hibernate.hbm2ddl.auto", "create-drop");
     jpaProperties.put("hibernate.dialect", "org.hibernate.dialect.MySQL8Dialect");
     jpaProperties.put("hibernate.max_fetch.depth", 3);
-    jpaProperties.put("hibernate.jdbc.fetch_size", 50);
+    jpaProperties.put("hibernate.jdbc.fetch_size", 10);
     jpaProperties.put("hibernate.jdbc.batch_size", 10);
     jpaProperties.put("hibernate.show_sql", true);
     jpaProperties.put("hibernate.format_sql", true);
-    jpaProperties.put("connection.pool_size", 2);
+    jpaProperties.put("hibernate.order_inserts", true);
+    jpaProperties.put("hibernate.order_updates", true);
+    jpaProperties.put("hibernate.batch_versioned_data", 10);
+    jpaProperties.put("connection.pool_size", 1);
     jpaProperties.put("hibernate.generate_statistics", true);
     return jpaProperties;
   }
