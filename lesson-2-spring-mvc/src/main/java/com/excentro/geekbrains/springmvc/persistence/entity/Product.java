@@ -12,7 +12,7 @@ import java.math.BigDecimal;
 public class Product {
 
   @Id
-  @GeneratedValue(strategy = GenerationType.IDENTITY)
+  @GeneratedValue(strategy = GenerationType.SEQUENCE) // To make batching work
   private Long id;
 
   private String title;
