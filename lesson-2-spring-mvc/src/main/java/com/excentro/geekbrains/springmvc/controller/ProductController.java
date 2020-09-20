@@ -6,6 +6,8 @@ import com.excentro.geekbrains.springmvc.persistence.repo.ProductSpecification;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -20,13 +22,13 @@ import javax.annotation.PostConstruct;
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.ThreadLocalRandom;
 
 @Controller
 @RequestMapping("/products")
 public class ProductController {
 
-  public static final String PRODUCT_URL = "product";
   private static final Logger logger = LoggerFactory.getLogger(ProductController.class);
   private final ProductRepository productRepository;
 
@@ -38,11 +40,22 @@ public class ProductController {
   @GetMapping
   public String allProducts(
       Model model,
-      @RequestParam(value = "title", required = false) String title,
+      @RequestParam(value = "title", required = false, defaultValue = "") String title,
       @RequestParam(value = "priceLess", required = false) BigDecimal priceLess,
-      @RequestParam(value = "priceGreater", required = false) BigDecimal priceGreater) {
+      @RequestParam(value = "priceGreater", required = false) BigDecimal priceGreater,
+      @RequestParam("page") Optional<Integer> page,
+      @RequestParam("size") Optional<Integer> size,
+      @RequestParam(value = "sortBy", required = false, defaultValue = "id") String sortBy) {
 
     logger.info("Filtering by title: {}", title);
+    PageRequest pageRequest;
+
+    if (sortBy.equals("id") || sortBy.equals("title")) {
+      pageRequest = PageRequest.of(page.orElse(1) - 1, size.orElse(5), Sort.Direction.ASC, sortBy);
+    } else {
+      pageRequest = PageRequest.of(page.orElse(1) - 1, size.orElse(5), Sort.Direction.ASC, "id");
+    }
+
     Specification<Product> specification = ProductSpecification.trueLiteral();
     if (priceLess != null && priceGreater == null) {
       specification = specification.and(ProductSpecification.priceLess(priceLess));
@@ -53,15 +66,15 @@ public class ProductController {
     } else {
       specification = specification.and(ProductSpecification.titleLike(title));
     }
-    model.addAttribute("products", productRepository.findAll(specification));
+    model.addAttribute("productsPage", productRepository.findAll(specification, pageRequest));
     return "products";
   }
 
   @GetMapping("/{id}")
   public String editProduct(@PathVariable("id") Long id, Model model) {
     Product product = productRepository.findById(id).orElse(new Product());
-    model.addAttribute(PRODUCT_URL, product);
-    return PRODUCT_URL;
+    model.addAttribute("product", product);
+    return "product";
   }
 
   @PostMapping("/update")
@@ -73,8 +86,8 @@ public class ProductController {
   @GetMapping("/new")
   public String addNewProduct(Model model) {
     Product product = new Product(null, "", new BigDecimal(0));
-    model.addAttribute(PRODUCT_URL, product);
-    return PRODUCT_URL;
+    model.addAttribute("product", product);
+    return "product";
   }
 
   @DeleteMapping("/{id}/delete")
