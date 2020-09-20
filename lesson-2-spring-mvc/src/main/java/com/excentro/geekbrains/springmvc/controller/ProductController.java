@@ -2,9 +2,11 @@ package com.excentro.geekbrains.springmvc.controller;
 
 import com.excentro.geekbrains.springmvc.persistence.entity.Product;
 import com.excentro.geekbrains.springmvc.persistence.repo.ProductRepository;
+import com.excentro.geekbrains.springmvc.persistence.repo.ProductSpecification;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -25,10 +27,13 @@ import java.util.concurrent.ThreadLocalRandom;
 public class ProductController {
 
   public static final String PRODUCT_URL = "product";
-
   private static final Logger logger = LoggerFactory.getLogger(ProductController.class);
+  private final ProductRepository productRepository;
 
-  @Autowired private ProductRepository productRepository;
+  @Autowired
+  public ProductController(ProductRepository productRepository) {
+    this.productRepository = productRepository;
+  }
 
   @GetMapping
   public String allProducts(
@@ -36,20 +41,19 @@ public class ProductController {
       @RequestParam(value = "title", required = false) String title,
       @RequestParam(value = "priceLess", required = false) BigDecimal priceLess,
       @RequestParam(value = "priceGreater", required = false) BigDecimal priceGreater) {
-    List<Product> products;
+
     logger.info("Filtering by title: {}", title);
-    if ((title == null || title.isEmpty()) && (priceLess == null && priceGreater == null)) {
-      products = productRepository.findAll();
-    } else if (priceLess != null && priceGreater == null) {
-      products = productRepository.findByCostLessThan(priceLess);
+    Specification<Product> specification = ProductSpecification.trueLiteral();
+    if (priceLess != null && priceGreater == null) {
+      specification = specification.and(ProductSpecification.priceLess(priceLess));
     } else if (priceLess == null && priceGreater != null) {
-      products = productRepository.findByCostGreaterThan(priceGreater);
+      specification = specification.and(ProductSpecification.priceGreater(priceGreater));
     } else if (priceLess != null) {
-      products = productRepository.findByCostBetween(priceLess, priceGreater);
+      specification = specification.and(ProductSpecification.priceBetween(priceLess, priceGreater));
     } else {
-      products = productRepository.findByTitleLike("%" + title + "%");
+      specification = specification.and(ProductSpecification.titleLike(title));
     }
-    model.addAttribute("products", products);
+    model.addAttribute("products", productRepository.findAll(specification));
     return "products";
   }
 
