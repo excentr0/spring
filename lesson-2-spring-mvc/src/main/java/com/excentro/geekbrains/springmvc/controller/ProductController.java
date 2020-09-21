@@ -2,9 +2,13 @@ package com.excentro.geekbrains.springmvc.controller;
 
 import com.excentro.geekbrains.springmvc.persistence.entity.Product;
 import com.excentro.geekbrains.springmvc.persistence.repo.ProductRepository;
+import com.excentro.geekbrains.springmvc.persistence.repo.ProductSpecification;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -18,46 +22,59 @@ import javax.annotation.PostConstruct;
 import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.ThreadLocalRandom;
 
 @Controller
 @RequestMapping("/products")
 public class ProductController {
 
-  public static final String PRODUCT_URL = "product";
-
   private static final Logger logger = LoggerFactory.getLogger(ProductController.class);
+  private final ProductRepository productRepository;
 
-  @Autowired private ProductRepository productRepository;
+  @Autowired
+  public ProductController(ProductRepository productRepository) {
+    this.productRepository = productRepository;
+  }
 
   @GetMapping
   public String allProducts(
       Model model,
-      @RequestParam(value = "title", required = false) String title,
+      @RequestParam(value = "title", required = false, defaultValue = "") String title,
       @RequestParam(value = "priceLess", required = false) BigDecimal priceLess,
-      @RequestParam(value = "priceGreater", required = false) BigDecimal priceGreater) {
-    List<Product> products;
+      @RequestParam(value = "priceGreater", required = false) BigDecimal priceGreater,
+      @RequestParam("page") Optional<Integer> page,
+      @RequestParam("size") Optional<Integer> size,
+      @RequestParam(value = "sortBy", required = false, defaultValue = "id") String sortBy) {
+
     logger.info("Filtering by title: {}", title);
-    if ((title == null || title.isEmpty()) && (priceLess == null && priceGreater == null)) {
-      products = productRepository.findAll();
-    } else if (priceLess != null && priceGreater == null) {
-      products = productRepository.findByCostLessThan(priceLess);
-    } else if (priceLess == null && priceGreater != null) {
-      products = productRepository.findByCostGreaterThan(priceGreater);
-    } else if (priceLess != null) {
-      products = productRepository.findByCostBetween(priceLess, priceGreater);
+    PageRequest pageRequest;
+
+    if (sortBy.equals("id") || sortBy.equals("title")) {
+      pageRequest = PageRequest.of(page.orElse(1) - 1, size.orElse(5), Sort.Direction.ASC, sortBy);
     } else {
-      products = productRepository.findByTitleLike("%" + title + "%");
+      pageRequest = PageRequest.of(page.orElse(1) - 1, size.orElse(5), Sort.Direction.ASC, "id");
     }
-    model.addAttribute("products", products);
+
+    Specification<Product> specification = ProductSpecification.trueLiteral();
+    if (priceLess != null && priceGreater == null) {
+      specification = specification.and(ProductSpecification.priceLess(priceLess));
+    } else if (priceLess == null && priceGreater != null) {
+      specification = specification.and(ProductSpecification.priceGreater(priceGreater));
+    } else if (priceLess != null) {
+      specification = specification.and(ProductSpecification.priceBetween(priceLess, priceGreater));
+    } else {
+      specification = specification.and(ProductSpecification.titleLike(title));
+    }
+    model.addAttribute("productsPage", productRepository.findAll(specification, pageRequest));
     return "products";
   }
 
   @GetMapping("/{id}")
   public String editProduct(@PathVariable("id") Long id, Model model) {
     Product product = productRepository.findById(id).orElse(new Product());
-    model.addAttribute(PRODUCT_URL, product);
-    return PRODUCT_URL;
+    model.addAttribute("product", product);
+    return "product";
   }
 
   @PostMapping("/update")
@@ -69,8 +86,8 @@ public class ProductController {
   @GetMapping("/new")
   public String addNewProduct(Model model) {
     Product product = new Product(null, "", new BigDecimal(0));
-    model.addAttribute(PRODUCT_URL, product);
-    return PRODUCT_URL;
+    model.addAttribute("product", product);
+    return "product";
   }
 
   @DeleteMapping("/{id}/delete")
