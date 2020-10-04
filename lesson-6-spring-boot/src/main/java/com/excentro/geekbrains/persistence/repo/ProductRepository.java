@@ -18,4 +18,6 @@ public interface ProductRepository
   List<Product> findByCostGreaterThan(BigDecimal minPrice);
 
   List<Product> findByCostBetween(BigDecimal min, BigDecimal max);
+
+  void deleteById(String id);
 }

@@ -1,0 +1,28 @@
+GET http://localhost:8080/mvc/api/v1/product/all
+Content-Type: application/json
+
+###
+GET http://localhost:8080/mvc/api/v1/product/5/id
+Content-Type: application/json
+
+###
+POST http://localhost:8080/mvc/api/v1/product
+Content-Type: application/json
+
+{
+  "title": "Phone19",
+  "cost": 9885.00
+}
+
+###
+PUT http://localhost:8080/mvc/api/v1/product
+Content-Type: application/json
+
+{
+  "id": 2,
+  "title": "New Phone 2",
+  "cost": 9885.00
+}
+
+###
+DELETE http://localhost:8080/mvc/api/v1/product/1/id
