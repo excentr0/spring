@@ -1,7 +1,7 @@
 package com.excentro.geekbrains.controller;
 
 import com.excentro.geekbrains.persistence.entity.Product;
-import com.excentro.geekbrains.persistence.entity.Role;
+import com.excentro.geekbrains.persistence.entity.Authority;
 import com.excentro.geekbrains.persistence.entity.User;
 import com.excentro.geekbrains.persistence.repo.ProductRepository;
 import com.excentro.geekbrains.persistence.repo.ProductSpecification;
@@ -152,15 +152,13 @@ public class ProductController {
 
     productRepository.saveAll(products);
 
-    Role adminRole = new Role("ADMIN");
-    Role managerRole = new Role("MANAGER");
+    Authority adminRole = new Authority("ADMIN");
+    Authority managerRole = new Authority("MANAGER");
 
     User admin = new User("admin", "admin");
     User manager = new User("manager", "manager");
 
     admin.addRole(adminRole);
-    admin.addRole(managerRole);
-
     manager.addRole(managerRole);
 
     userRepository.saveAll(Arrays.asList(admin, manager));

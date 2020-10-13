@@ -28,10 +28,10 @@ public class User {
 
   @ManyToMany(cascade = CascadeType.ALL)
   @JoinTable(
-      name = "user_roles",
-      joinColumns = @JoinColumn(name = "role_id"),
-      inverseJoinColumns = @JoinColumn(name = "user_id"))
-  private Set<Role> roles = new HashSet<>();
+      name = "user_authority",
+      joinColumns = @JoinColumn(name = "user_id"),
+      inverseJoinColumns = @JoinColumn(name = "authority_id"))
+  private Set<Authority> authority = new HashSet<>();
 
   public User(String login, String password) {
     this.login = login;
@@ -41,8 +41,8 @@ public class User {
 
   public User() {}
 
-  public void addRole(Role role) {
-    roles.add(role);
+  public void addRole(Authority role) {
+    authority.add(role);
     role.getUsers().add(this);
   }
 }

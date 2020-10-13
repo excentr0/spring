@@ -14,19 +14,19 @@ import java.util.Set;
 @Entity
 @Getter
 @Setter
-public class Role {
+public class Authority {
   @Id
   @GeneratedValue(strategy = GenerationType.SEQUENCE)
   private Long id;
 
-  private String roleName;
+  private String authority;
 
-  @ManyToMany(mappedBy = "roles")
+  @ManyToMany(mappedBy = "authority")
   private Set<User> users = new HashSet<>();
 
-  public Role() {}
+  public Authority() {}
 
-  public Role(String roleName) {
-    this.roleName = roleName;
+  public Authority(String authority) {
+    this.authority = authority;
   }
 }
