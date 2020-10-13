@@ -3,8 +3,7 @@ package com.excentro.geekbrains.controller;
 import com.excentro.geekbrains.persistence.entity.Product;
 import com.excentro.geekbrains.persistence.repo.ProductRepository;
 import com.excentro.geekbrains.persistence.repo.ProductSpecification;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -25,11 +24,11 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ThreadLocalRandom;
 
+@Slf4j
 @Controller
 @RequestMapping("/products")
 public class ProductController {
 
-  private static final Logger logger = LoggerFactory.getLogger(ProductController.class);
   private final ProductRepository productRepository;
 
   @Autowired
@@ -43,11 +42,11 @@ public class ProductController {
       @RequestParam(value = "title", required = false, defaultValue = "") String title,
       @RequestParam(value = "priceLess", required = false) BigDecimal priceLess,
       @RequestParam(value = "priceGreater", required = false) BigDecimal priceGreater,
-      @RequestParam("page") Optional<Integer> page,
-      @RequestParam("size") Optional<Integer> size,
+      @RequestParam(value = "page") Optional<Integer> page,
+      @RequestParam(value = "size") Optional<Integer> size,
       @RequestParam(value = "sortBy", required = false, defaultValue = "id") String sortBy) {
 
-    logger.info("Filtering by title: {}", title);
+    log.info("Filtering by title: {}", title);
     PageRequest pageRequest;
 
     if (sortBy.equals("id") || sortBy.equals("title")) {
@@ -85,7 +84,7 @@ public class ProductController {
 
   @GetMapping("/new")
   public String addNewProduct(Model model) {
-    Product product = new Product(null, "", new BigDecimal(0));
+    Product product = new Product("", new BigDecimal(0));
     model.addAttribute("product", product);
     return "product";
   }
@@ -100,45 +99,45 @@ public class ProductController {
   @PostConstruct
   public void init() {
     Product product =
-        new Product(null, "Phone1", new BigDecimal(ThreadLocalRandom.current().nextInt(10000)));
+        new Product("Phone1", new BigDecimal(ThreadLocalRandom.current().nextInt(10000)));
     Product product1 =
-        new Product(null, "Phone2", new BigDecimal(ThreadLocalRandom.current().nextInt(10000)));
+        new Product("Phone2", new BigDecimal(ThreadLocalRandom.current().nextInt(10000)));
     Product product2 =
-        new Product(null, "Phone3", new BigDecimal(ThreadLocalRandom.current().nextInt(10000)));
+        new Product("Phone3", new BigDecimal(ThreadLocalRandom.current().nextInt(10000)));
     Product product3 =
-        new Product(null, "Phone4", new BigDecimal(ThreadLocalRandom.current().nextInt(10000)));
+        new Product("Phone4", new BigDecimal(ThreadLocalRandom.current().nextInt(10000)));
     Product product4 =
-        new Product(null, "Phone5", new BigDecimal(ThreadLocalRandom.current().nextInt(10000)));
+        new Product("Phone5", new BigDecimal(ThreadLocalRandom.current().nextInt(10000)));
     Product product5 =
-        new Product(null, "Phone6", new BigDecimal(ThreadLocalRandom.current().nextInt(10000)));
+        new Product("Phone6", new BigDecimal(ThreadLocalRandom.current().nextInt(10000)));
     Product product6 =
-        new Product(null, "Phone7", new BigDecimal(ThreadLocalRandom.current().nextInt(10000)));
+        new Product("Phone7", new BigDecimal(ThreadLocalRandom.current().nextInt(10000)));
     Product product7 =
-        new Product(null, "Phone8", new BigDecimal(ThreadLocalRandom.current().nextInt(10000)));
+        new Product("Phone8", new BigDecimal(ThreadLocalRandom.current().nextInt(10000)));
     Product product8 =
-        new Product(null, "Phone9", new BigDecimal(ThreadLocalRandom.current().nextInt(10000)));
+        new Product("Phone9", new BigDecimal(ThreadLocalRandom.current().nextInt(10000)));
     Product product9 =
-        new Product(null, "Phone10", new BigDecimal(ThreadLocalRandom.current().nextInt(10000)));
+        new Product("Phone10", new BigDecimal(ThreadLocalRandom.current().nextInt(10000)));
     Product product10 =
-        new Product(null, "Phone11", new BigDecimal(ThreadLocalRandom.current().nextInt(10000)));
+        new Product("Phone11", new BigDecimal(ThreadLocalRandom.current().nextInt(10000)));
     Product product11 =
-        new Product(null, "Phone12", new BigDecimal(ThreadLocalRandom.current().nextInt(10000)));
+        new Product("Phone12", new BigDecimal(ThreadLocalRandom.current().nextInt(10000)));
     Product product12 =
-        new Product(null, "Phone13", new BigDecimal(ThreadLocalRandom.current().nextInt(10000)));
+        new Product("Phone13", new BigDecimal(ThreadLocalRandom.current().nextInt(10000)));
     Product product13 =
-        new Product(null, "Phone14", new BigDecimal(ThreadLocalRandom.current().nextInt(10000)));
+        new Product("Phone14", new BigDecimal(ThreadLocalRandom.current().nextInt(10000)));
     Product product14 =
-        new Product(null, "Phone15", new BigDecimal(ThreadLocalRandom.current().nextInt(10000)));
+        new Product("Phone15", new BigDecimal(ThreadLocalRandom.current().nextInt(10000)));
     Product product15 =
-        new Product(null, "Phone16", new BigDecimal(ThreadLocalRandom.current().nextInt(10000)));
+        new Product("Phone16", new BigDecimal(ThreadLocalRandom.current().nextInt(10000)));
     Product product16 =
-        new Product(null, "Phone17", new BigDecimal(ThreadLocalRandom.current().nextInt(10000)));
+        new Product("Phone17", new BigDecimal(ThreadLocalRandom.current().nextInt(10000)));
     Product product17 =
-        new Product(null, "Phone18", new BigDecimal(ThreadLocalRandom.current().nextInt(10000)));
+        new Product("Phone18", new BigDecimal(ThreadLocalRandom.current().nextInt(10000)));
     Product product18 =
-        new Product(null, "Phone19", new BigDecimal(ThreadLocalRandom.current().nextInt(10000)));
+        new Product("Phone19", new BigDecimal(ThreadLocalRandom.current().nextInt(10000)));
     Product product19 =
-        new Product(null, "Phone20", new BigDecimal(ThreadLocalRandom.current().nextInt(10000)));
+        new Product("Phone20", new BigDecimal(ThreadLocalRandom.current().nextInt(10000)));
 
     List<Product> products =
         Arrays.asList(

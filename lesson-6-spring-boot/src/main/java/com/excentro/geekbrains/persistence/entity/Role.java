@@ -7,21 +7,20 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import java.math.BigDecimal;
+import javax.persistence.ManyToMany;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Data
 @NoArgsConstructor
-public class Product {
+public class Role {
   @Id
   @GeneratedValue(strategy = GenerationType.SEQUENCE)
   private Long id;
 
-  private String title;
-  private BigDecimal cost;
+  private String roleName;
 
-  public Product(String title, BigDecimal cost) {
-    this.title = title;
-    this.cost = cost;
-  }
+  @ManyToMany(mappedBy = "roles")
+  private Set<User> users = new HashSet<>();
 }
