@@ -1,8 +1,11 @@
 package com.excentro.geekbrains.controller;
 
 import com.excentro.geekbrains.persistence.entity.Product;
+import com.excentro.geekbrains.persistence.entity.Role;
+import com.excentro.geekbrains.persistence.entity.User;
 import com.excentro.geekbrains.persistence.repo.ProductRepository;
 import com.excentro.geekbrains.persistence.repo.ProductSpecification;
+import com.excentro.geekbrains.persistence.repo.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
@@ -30,10 +33,12 @@ import java.util.concurrent.ThreadLocalRandom;
 public class ProductController {
 
   private final ProductRepository productRepository;
+  private final UserRepository userRepository;
 
   @Autowired
-  public ProductController(ProductRepository productRepository) {
+  public ProductController(ProductRepository productRepository, UserRepository userRepository) {
     this.productRepository = productRepository;
+    this.userRepository = userRepository;
   }
 
   @GetMapping
@@ -146,5 +151,18 @@ public class ProductController {
             product17, product18, product19);
 
     productRepository.saveAll(products);
+
+    Role adminRole = new Role("ADMIN");
+    Role managerRole = new Role("MANAGER");
+
+    User admin = new User("admin", "admin");
+    User manager = new User("manager", "manager");
+
+    admin.addRole(adminRole);
+    admin.addRole(managerRole);
+
+    manager.addRole(managerRole);
+
+    userRepository.saveAll(Arrays.asList(admin, manager));
   }
 }

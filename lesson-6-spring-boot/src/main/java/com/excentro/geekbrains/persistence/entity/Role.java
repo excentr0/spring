@@ -1,7 +1,7 @@
 package com.excentro.geekbrains.persistence.entity;
 
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -12,8 +12,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-@Data
-@NoArgsConstructor
+@Getter
+@Setter
 public class Role {
   @Id
   @GeneratedValue(strategy = GenerationType.SEQUENCE)
@@ -23,4 +23,10 @@ public class Role {
 
   @ManyToMany(mappedBy = "roles")
   private Set<User> users = new HashSet<>();
+
+  public Role() {}
+
+  public Role(String roleName) {
+    this.roleName = roleName;
+  }
 }

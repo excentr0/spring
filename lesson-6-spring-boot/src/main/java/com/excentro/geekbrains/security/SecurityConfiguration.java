@@ -14,14 +14,14 @@ import javax.servlet.http.HttpServletResponse;
 @EnableWebSecurity
 public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 
-  public static final String ADMIN = "ADMIN";
+  public static final String ADMIN_ROLE = "ADMIN";
 
   @Autowired
   public void authConfigure(AuthenticationManagerBuilder auth) throws Exception {
     auth.inMemoryAuthentication()
         .withUser("mike")
         .password("{bcrypt}$2y$12$0WUu5/CCi/HeHlzDZBy/weVz0R/b7MUDsfsxXghGg.PSvp.65aU42")
-        .roles(ADMIN);
+        .roles(ADMIN_ROLE);
   }
 
   @Configuration
@@ -34,7 +34,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
           .antMatchers("/")
           .permitAll()
           .antMatchers("/products/**")
-          .hasRole(ADMIN)
+          .hasRole(ADMIN_ROLE)
           .and()
           .formLogin()
           .loginPage("/login")
@@ -56,7 +56,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
           .antMatcher("/api/**")
           .authorizeRequests()
           .anyRequest()
-          .hasRole(ADMIN)
+          .hasRole(ADMIN_ROLE)
           .and()
           .httpBasic()
           .authenticationEntryPoint(

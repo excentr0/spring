@@ -1,7 +1,7 @@
 package com.excentro.geekbrains.persistence.entity;
 
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.Getter;
+import lombok.Setter;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
@@ -15,8 +15,8 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-@Data
-@NoArgsConstructor
+@Getter
+@Setter
 public class User {
   @Id
   @GeneratedValue(strategy = GenerationType.SEQUENCE)
@@ -24,6 +24,7 @@ public class User {
 
   private String login;
   private String password;
+  private boolean enabled;
 
   @ManyToMany(cascade = CascadeType.ALL)
   @JoinTable(
@@ -31,4 +32,17 @@ public class User {
       joinColumns = @JoinColumn(name = "role_id"),
       inverseJoinColumns = @JoinColumn(name = "user_id"))
   private Set<Role> roles = new HashSet<>();
+
+  public User(String login, String password) {
+    this.login = login;
+    this.password = password;
+    this.enabled = true;
+  }
+
+  public User() {}
+
+  public void addRole(Role role) {
+    roles.add(role);
+    role.getUsers().add(this);
+  }
 }
