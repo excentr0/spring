@@ -1,7 +1,6 @@
 package com.excentro.geekbrains.security;
 
 import com.excentro.geekbrains.persistence.repo.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -13,7 +12,6 @@ import java.util.Collections;
 public class UserAuthService implements UserDetailsService {
   private final UserRepository userRepository;
 
-  @Autowired
   public UserAuthService(UserRepository userRepository) {
     this.userRepository = userRepository;
   }
@@ -23,13 +21,11 @@ public class UserAuthService implements UserDetailsService {
     return userRepository
         .findByLogin(username)
         .map(
-            user -> {
-              String login = user.getLogin();
-              String password = user.getPassword();
-              String userRole = user.getRole();
-              return new User(
-                  login, password, Collections.singletonList(new SimpleGrantedAuthority(userRole)));
-            })
+            user ->
+                new User(
+                    user.getLogin(),
+                    user.getPassword(),
+                    Collections.singletonList(new SimpleGrantedAuthority(user.getRole()))))
         .orElseThrow(() -> new UsernameNotFoundException("User not found"));
   }
 }
