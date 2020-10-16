@@ -1,7 +1,7 @@
 package com.excentro.geekbrains.controller;
 
 import com.excentro.geekbrains.persistence.entity.Product;
-import com.excentro.geekbrains.persistence.entity.Authority;
+import com.excentro.geekbrains.persistence.entity.Role;
 import com.excentro.geekbrains.persistence.entity.User;
 import com.excentro.geekbrains.persistence.repo.ProductRepository;
 import com.excentro.geekbrains.persistence.repo.ProductSpecification;
@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -34,11 +35,16 @@ public class ProductController {
 
   private final ProductRepository productRepository;
   private final UserRepository userRepository;
+  private final PasswordEncoder passwordEncoder;
 
   @Autowired
-  public ProductController(ProductRepository productRepository, UserRepository userRepository) {
+  public ProductController(
+      ProductRepository productRepository,
+      UserRepository userRepository,
+      PasswordEncoder passwordEncoder) {
     this.productRepository = productRepository;
     this.userRepository = userRepository;
+    this.passwordEncoder = passwordEncoder;
   }
 
   @GetMapping
@@ -51,7 +57,6 @@ public class ProductController {
       @RequestParam(value = "size") Optional<Integer> size,
       @RequestParam(value = "sortBy", required = false, defaultValue = "id") String sortBy) {
 
-    log.info("Filtering by title: {}", title);
     PageRequest pageRequest;
 
     if (sortBy.equals("id") || sortBy.equals("title")) {
@@ -100,9 +105,10 @@ public class ProductController {
     return "redirect:/products";
   }
 
-  /** Добавляем тестовые товары. */
+  /** Добавляем тестовые данные. */
   @PostConstruct
   public void init() {
+    // добавляем продукты
     Product product =
         new Product("Phone1", new BigDecimal(ThreadLocalRandom.current().nextInt(10000)));
     Product product1 =
@@ -152,11 +158,12 @@ public class ProductController {
 
     productRepository.saveAll(products);
 
-    Authority adminRole = new Authority("ADMIN");
-    Authority managerRole = new Authority("MANAGER");
+    // добавляем пользователей и их роли
+    Role adminRole = new Role("ROLE_ADMIN");
+    Role managerRole = new Role("ROLE_MANAGER");
 
-    User admin = new User("admin", "admin");
-    User manager = new User("manager", "manager");
+    User admin = new User("admin", passwordEncoder.encode("admin"));
+    User manager = new User("manager", passwordEncoder.encode("manager"));
 
     admin.addRole(adminRole);
     manager.addRole(managerRole);

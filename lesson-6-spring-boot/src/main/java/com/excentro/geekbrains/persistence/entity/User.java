@@ -1,10 +1,12 @@
 package com.excentro.geekbrains.persistence.entity;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -17,6 +19,7 @@ import java.util.Set;
 @Entity
 @Getter
 @Setter
+@NoArgsConstructor
 public class User {
   @Id
   @GeneratedValue(strategy = GenerationType.SEQUENCE)
@@ -26,12 +29,12 @@ public class User {
   private String password;
   private boolean enabled;
 
-  @ManyToMany(cascade = CascadeType.ALL)
+  @ManyToMany(cascade = CascadeType.ALL, fetch = FetchType.EAGER)
   @JoinTable(
       name = "user_authority",
       joinColumns = @JoinColumn(name = "user_id"),
       inverseJoinColumns = @JoinColumn(name = "authority_id"))
-  private Set<Authority> authority = new HashSet<>();
+  private Set<Role> authority = new HashSet<>();
 
   public User(String login, String password) {
     this.login = login;
@@ -39,10 +42,12 @@ public class User {
     this.enabled = true;
   }
 
-  public User() {}
-
-  public void addRole(Authority role) {
+  public void addRole(Role role) {
     authority.add(role);
     role.getUsers().add(this);
+  }
+
+  public String getRole() {
+    return authority.iterator().next().toString();
   }
 }
