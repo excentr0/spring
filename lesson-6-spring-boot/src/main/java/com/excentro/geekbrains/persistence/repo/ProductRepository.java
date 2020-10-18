@@ -19,5 +19,5 @@ public interface ProductRepository
 
   List<Product> findByCostBetween(BigDecimal min, BigDecimal max);
 
-  void deleteById(String id);
+  void deleteById(Long id);
 }

@@ -1,13 +1,16 @@
 GET http://localhost:8080/mvc/api/v1/product/all
 Content-Type: application/json
+Authorization: Basic mike password
 
 ###
 GET http://localhost:8080/mvc/api/v1/product/5/id
 Content-Type: application/json
+Authorization: Basic mike password
 
 ###
 POST http://localhost:8080/mvc/api/v1/product
 Content-Type: application/json
+Authorization: Basic mike password
 
 {
   "title": "Phone19",
@@ -17,6 +20,7 @@ Content-Type: application/json
 ###
 PUT http://localhost:8080/mvc/api/v1/product
 Content-Type: application/json
+Authorization: Basic mike password
 
 {
   "id": 2,
@@ -26,3 +30,4 @@ Content-Type: application/json
 
 ###
 DELETE http://localhost:8080/mvc/api/v1/product/1/id
+Authorization: Basic mike password

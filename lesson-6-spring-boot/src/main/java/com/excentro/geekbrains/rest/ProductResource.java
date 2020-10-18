@@ -2,6 +2,7 @@ package com.excentro.geekbrains.rest;
 
 import com.excentro.geekbrains.persistence.entity.Product;
 import com.excentro.geekbrains.persistence.repo.ProductRepository;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +20,7 @@ import java.util.List;
 
 @RequestMapping("/api/v1/product")
 @RestController
+@Tag(name = "Product API", description = "API to operate products")
 public class ProductResource {
   private final ProductRepository productRepository;
 
